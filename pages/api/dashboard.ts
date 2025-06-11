@@ -60,6 +60,20 @@ export default async function handler(
       take: 5
     })
 
+    // Get emergency contacts for quick access
+    const emergencyContacts = await prisma.contact.findMany({
+      where: {
+        userId: user.id,
+        type: 'EMERGENCY'
+      },
+      select: {
+        id: true,
+        name: true,
+        phone: true
+      },
+      take: 3
+    })
+
     res.status(200).json({
       stats: {
         documents: user._count.documents,
@@ -67,7 +81,8 @@ export default async function handler(
         reminders: user._count.reminders,
       },
       expiringDocuments,
-      upcomingReminders
+      upcomingReminders,
+      emergencyContacts
     })
   } catch (error) {
     console.error('Dashboard API error:', error)
